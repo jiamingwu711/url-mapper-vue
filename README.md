@@ -14,6 +14,7 @@ npm install url-mapper-vue --save
 ## How to use
 
 ### vue directives
+you can use it in a DOM with a v-model, and this is reactively for both url params and data of component.
 
 First:
 
@@ -21,8 +22,6 @@ First:
 import { UrlMapperDirective } from 'url-mapper-vue'
 Vue.use(UrlMapperDirective)
 ```
-
-you can use it in a DOM with a v-model.
 
 Desc:
 

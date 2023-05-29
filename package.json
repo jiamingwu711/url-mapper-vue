@@ -1,6 +1,6 @@
 {
   "name": "url-mapper-vue",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Map the url query parameter to the data of the vue component.",
   "main": "lib/index.js",
   "scripts": {
