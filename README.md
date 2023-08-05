@@ -25,16 +25,17 @@ Vue.use(UrlMapperDirective)
 
 Desc:
 
-v-url-map={url, type, value}
+v-url-map={url, type, value, callback}
 
-- url:  url params name 
-- type: indicate the value type of component data, these types are supported:
+- url (required):  url params name 
+- type (required): indicate the value type of component data, these types are supported:
   -  boolean
   -  string
   -  number
-  - array|number
+  -  array|number
   -  array|string
-- value: vue component data
+- value (required) : vue component data
+- callback (optional): the method name of component, will be called after setting the url parameter to the component's data value.
 
 Example:
 

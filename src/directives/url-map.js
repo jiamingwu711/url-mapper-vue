@@ -1,4 +1,4 @@
-import { setUrlParams, setDataFromUrl } from '../core/index'
+import { setUrlParams, setDataFromUrl } from '../core'
 
 function debounce (func, wait, immediate) {
   let timeout
@@ -19,11 +19,21 @@ function debounce (func, wait, immediate) {
   }
 }
 
-let config2data = {}
-const reflect2data = function (vm) {
+let config2data = {} // 存放到一个 data 中
+let callbackMap = {}
+
+const reflect2data = debounce(function (vm) {
   setDataFromUrl.call(vm, { ...config2data })
   config2data = {}
-}
+  if (callbackMap[vm]) {
+    vm.$nextTick(() => {
+      callbackMap[vm].forEach(cbName => {
+        if (typeof vm[cbName] === 'function') vm[cbName]()
+      })
+      callbackMap[vm] = []
+    })
+  }
+}, 100)
 
 let config2Url = {}
 const reflect2Url = debounce(vm => {
@@ -33,8 +43,9 @@ const reflect2Url = debounce(vm => {
 
 export default {
   bind (el, { value, expression }, vnode) {
+    // 从 url 取出值，更新到 data 中
     if (!value) return
-    let { url, type, data } = value
+    let { url, type, data, callback } = value
     // 如果没有配置 data 则从表达式中获取
     if (!value.data) {
       const res = expression.matchAll(/value:\s*(.*?)(\}|,)/gi)
@@ -42,8 +53,11 @@ export default {
       data = firstRes[1]
     }
 
-    if (!(url && type && data)) throw Error(`v-url-map config not corrected: ${value}`)
-
+    if (!(url && type && data)) throw Error('url data 配置出错，请检查')
+    if (callback) {
+      callbackMap[vnode.context] = callbackMap[vnode.context] || []
+      callbackMap[vnode.context].push(callback)
+    }
     Object.assign(config2data, {
       [url]: { path: data, type }
     })
