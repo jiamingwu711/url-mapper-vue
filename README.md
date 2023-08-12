@@ -32,8 +32,11 @@ v-url-map={url, type, value, callback}
   -  boolean
   -  string
   -  number
+  -  object
   -  array|number
   -  array|string
+  -  arrays|array|number
+  -  arrays|array|string
 - value (required) : vue component data
 - callback (optional): the method name of component, will be called after setting the url parameter to the component's data value.
 

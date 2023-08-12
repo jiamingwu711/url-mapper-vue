@@ -29,6 +29,24 @@ function decodeUrl (url, count = 0) {
   return decodeUrl(decodeURIComponent(url), ++count)
 }
 
+function isJSONObject (json) {
+  try {
+    if (typeof json !== 'object') return false
+    JSON.parse(JSON.stringify(json))
+    return true
+  } catch (error) {
+    return false
+  }
+}
+
+function parseJSON2Object (str) {
+  try {
+    return str && JSON.parse(str)
+  } catch (error) {
+    return null
+  }
+}
+
 export function clearUrlParams () {
   const newUrl = `${window.location.pathname}${window.location.hash}`
   window.history.replaceState('', '', newUrl)
@@ -44,10 +62,16 @@ export function setUrlParams (params) {
   Object.keys(_params).forEach(key => {
     if ([null, undefined, ''].includes(_params[key]) || (Array.isArray(_params[key]) && !_params[key].length)) {
       // delete _params[key]
-    } else if (_params[key]) {
+    } else if (_params[key] || _params[key] === false) {
       let val = _params[key]
       if (/^http/.test(_params[key])) {
         val = encodeURIComponent(_params[key])
+      }
+      if (isJSONObject(val) && !Array.isArray(val)) {
+        val = JSON.stringify(val)
+      }
+      if (typeof val === 'boolean') {
+        val = String(val)
       }
       _params[key] = val
     }
@@ -56,6 +80,8 @@ export function setUrlParams (params) {
   // update url
   replaceQueryState(_params)
 }
+
+
 
 /**
  * map url params to component data
@@ -91,7 +117,11 @@ export function setDataFromUrl (config) {
         valToBeSet = String(valToBeSet)
         break
       case 'boolean':
-        valToBeSet = Boolean(valToBeSet)
+        if (valToBeSet === 'true') valToBeSet = true
+        else if (valToBeSet === 'false') valToBeSet = false
+        break
+      case 'object':
+        valToBeSet = parseJSON2Object(valToBeSet)
         break
       case 'array|number':
         valToBeSet = valToBeSet.split(',')
