@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://unpkg.com/naive-ui"></script>
+
+</head>
+<body>
+  <div id="app">
+    <n-form :model="model">
+      <n-form-item path="age" label="input">
+        <n-input 
+        v-model:value="model.age"
+        v-url-map="{url:'age',type:'string', value:'model.age'}"
+        @keydown.enter.prevent 
+        />
+      </n-form-item>
+
+      <n-form-item path="radio" label="radio">
+        <n-radio-group
+        v-model:value="model.radio"
+        v-url-map="{url:'radio',type:'string', value:'model.radio'}"
+        name="radiogroup">
+          <n-space>
+            <n-radio v-for="song in songs" :key="song.value" :value="song.value">
+              {{ song.label }}
+            </n-radio>
+          </n-space>
+        </n-radio-group>
+      </n-form-item>
+
+      <n-form-item path="time" label="time">
+        <n-time-picker 
+        v-model:value="model.time" 
+        v-url-map="{ url:'time', type:'string', value:'model.time' }"
+        />
+      </n-form-item>
+
+
+     
+      <n-row :gutter="[0, 24]">
+        <n-col :span="24">
+          <div style="display: flex; justify-content: flex-end">
+            <n-button
+              :disabled="model.age === null"
+              round
+              type="primary"
+            >
+              验证
+            </n-button>
+          </div>
+        </n-col>
+      </n-row>
+    </n-form>
+
+  </div>
+
+</body>
+</html>

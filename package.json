@@ -5,7 +5,8 @@
   "main": "lib/index.js",
   "scripts": {
     "build": "webpack",
-    "serve": "npx webpack serve --config ./webpack.dev.config.js"
+    "serve:vue2": "VUE_VERSION=2 npx webpack serve --config ./webpack.dev.config.js",
+    "serve:vue3": "VUE_VERSION=3 npx webpack serve --config ./webpack.dev.config.js"
   },
   "devDependencies": {
     "@babel/core": "^7.22.1",

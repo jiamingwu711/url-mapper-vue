@@ -1,4 +1,4 @@
-import { UrlMapperDirective, UrlMapperPlugin } from '../src/index.js'
+import { UrlMapperDirective, UrlMapperPlugin } from '../../src/index.js'
 Vue.use(UrlMapperDirective)
 Vue.use(UrlMapperPlugin)
 

@@ -1,8 +1,11 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
+
+const examplesPath = `./examples/vue${process.env.VUE_VERSION || 2}`
+
 module.exports = {
-  entry: './examples/index.js',
+  entry: `${examplesPath}/index.js`,
   mode: 'development',
   output: {
     path: path.resolve(__dirname, './dist'),
@@ -10,7 +13,7 @@ module.exports = {
   },
   plugins: [new HtmlWebpackPlugin({
     filename: 'index.html',
-    template: path.resolve(__dirname, './examples/index.html'),
+    template: path.resolve(__dirname, `${examplesPath}/index.html`),
   })],
 
   devServer: {
