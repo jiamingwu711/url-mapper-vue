@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+</head>
+<body>
+
+  <div id="app">
+    <el-row >
+      <el-col :span="12">
+        <el-form ref="form" :model="form" label-width="80px">
+          <el-form-item label="活动名称">
+            <el-input 
+              v-model="form.name" 
+              v-url-map="{url:'name',type:'string', value:form.name}">
+            </el-input>
+          </el-form-item>
+          <el-form-item label="活动区域">
+            <el-select
+              v-url-map="{url:'region',type:'string', value:form.region}"
+              v-model="form.region"
+              placeholder="请选择活动区域"
+              >
+              <el-option label="区域一" value="shanghai"></el-option>
+              <el-option label="区域二" value="beijing"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="活动时间">
+            <el-col :span="11">
+              <el-date-picker 
+                v-url-map="{url:'date1',type:'string', value:form.date1}"
+                type="date" 
+                placeholder="选择日期" 
+                v-model="form.date1" 
+                value-format="yyyy-MM-dd"
+                style="width: 100%;">
+              </el-date-picker>
+            </el-col>
+            <el-col class="line" :span="2">-</el-col>
+            <el-col :span="11">
+              <el-time-picker 
+                v-url-map="{url:'date2',type:'string', value:form.date2}"
+                placeholder="选择时间" 
+                v-model="form.date2" 
+                value-format="HH:mm:ss"
+                style="width: 100%;">
+              </el-time-picker>
+            </el-col>
+          </el-form-item>
+          <el-form-item label="即时配送">
+            <el-switch 
+              v-model="form.delivery" 
+              v-url-map="{url:'delivery',type:'boolean', value:form.delivery}"
+            ></el-switch>
+          </el-form-item>
+          <el-form-item label="活动性质">
+            <el-checkbox-group 
+              v-model="form.type"
+              v-url-map="{url:'type',type:'array|string', value:form.type}"
+              >
+              <el-checkbox label="美食/餐厅线上活动" name="type"></el-checkbox>
+              <el-checkbox label="地推活动" name="type"></el-checkbox>
+              <el-checkbox label="线下主题活动" name="type"></el-checkbox>
+              <el-checkbox label="单纯品牌曝光" name="type"></el-checkbox>
+            </el-checkbox-group>
+          </el-form-item>
+          <el-form-item label="特殊资源">
+            <el-radio-group 
+              v-model="form.resource" 
+              v-url-map="{url:'resource',type:'string', value:form.resource}">
+              <el-radio label="线上品牌商赞助"></el-radio>
+              <el-radio label="线下场地免费"></el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="活动形式">
+            <el-input 
+              type="textarea" 
+              v-url-map="{url:'desc',type:'string', value:form.desc, callback: 'ready'}"
+              v-model="form.desc" >
+            </el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="onSubmit">立即创建</el-button>
+            <el-button @click="clear">重置</el-button>
+          </el-form-item>
+        </el-form>
+      </el-col>
+
+      <el-col :span="12">
+        <el-form ref="form2" :model="form2" label-width="80px">
+          <el-form-item label="活动名称">
+            <el-input 
+              v-model="form2.name2">
+            </el-input>
+          </el-form-item>
+          <el-form-item label="活动区域">
+            <el-select
+              v-model="form2.region2"
+              placeholder="请选择活动区域"
+              >
+              <el-option label="区域一" value="shanghai"></el-option>
+              <el-option label="区域二" value="beijing"></el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item>
+            <el-button type="primary" @click="onSubmit2">data 2 url</el-button>
+            <el-button @click="clear2">url 2 data</el-button>
+          </el-form-item>
+        </el-form>
+      </el-col>
+    </el-row>
+  </div>
+  
+</body>
+</html>
