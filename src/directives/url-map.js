@@ -25,6 +25,7 @@ let callbackMap = new Map();
 const reflect2data = debounce(function (vm) {
   setDataFromUrl.call(vm, { ...config2data })
   config2data = {}
+  
   if (callbackMap.get(vm)) {
     vm.$nextTick(() => {
       callbackMap.get(vm).forEach(cbName => {
@@ -41,41 +42,44 @@ const reflect2Url = debounce(vm => {
   config2Url = {}
 }, 100)
 
+function addCallback(instance, callback) {
+  const cbList = callbackMap.get(instance) || []
+  if(!cbList.includes(callback)) cbList.push(callback)
+  callbackMap.set(instance, cbList)
+}
+
 const config = {
+  /**
+   * for vue3
+   */
   beforeMount (el, { value, instance, expression }, vnode) {
+    
     // 从 url 取出值，更新到 data 中
     if (!value) return
     let { url, type, data, callback } = value
     // 如果没有配置 data 则从表达式中获取
     if (!data) {
-      // const res = value.value
-      // const firstRes = [...res][0]
-      // data = firstRes[1]
       data = value.value
     }
 
     if (!(url && type && data)) throw Error('url data 配置出错，请检查')
     if (callback) {
-      // if(callbackMap.has(instance)) {
-      const cbList = callbackMap.get(instance) || []
-      cbList.push(callback)
-      callbackMap.set(instance, cbList)
-      // }
-      // callbackMap[vnode.context] = callbackMap[vnode.context] || []
-      // callbackMap[vnode.context].push(callback)
+      addCallback(instance, callback)
     }
     Object.assign(config2data, {
       [url]: { path: data, type }
     })
 
+    
     reflect2data(instance)
   },
-
+  /**
+   * for vue3
+   */
   updated (el, { oldValue, instance, value }, vnode) {
     if (!value) return
     // 取出值，更新到 url 中
     const elValue = value.value
-    console.log(instance)
 
     const { url } = value
     const keyPath = elValue.split('.')
@@ -83,7 +87,6 @@ const config = {
     
     keyPath.forEach(subPath => {
       thatValue = thatValue[subPath]
-      console.log(subPath, thatValue)
     })
 
     const params = { [url]: thatValue }
@@ -91,6 +94,9 @@ const config = {
     reflect2Url(instance)
   },
 
+  /**
+   * for vue2
+   */
   bind (el, { value, expression }, vnode) {
     // 从 url 取出值，更新到 data 中
     if (!value) return
@@ -104,8 +110,14 @@ const config = {
 
     if (!(url && type && data)) throw Error('url data 配置出错，请检查')
     if (callback) {
-      callbackMap[vnode.context] = callbackMap[vnode.context] || []
-      callbackMap[vnode.context].push(callback)
+
+      addCallback(vnode.context, callback)
+      // const cbList = callbackMap.get(vnode.context) || []
+      // cbList.push(callback)
+      // callbackMap.set(vnode.context, cbList)
+
+      // callbackMap[vnode.context] = callbackMap[vnode.context] || []
+      // callbackMap[vnode.context].push(callback)
     }
     Object.assign(config2data, {
       [url]: { path: data, type }
@@ -113,6 +125,9 @@ const config = {
 
     reflect2data(vnode.context)
   },
+  /**
+   * for vue2
+   */
   componentUpdated (el, { oldValue, value }, vnode) {
     if (!value) return
     // 取出值，更新到 url 中

@@ -2,22 +2,69 @@
 
 const { createApp, ref } = Vue
 import { UrlMapperDirective, UrlMapperPlugin } from '../../src/index.js'
-
-// Vue.use(UrlMapperDirective)
-// Vue.use(UrlMapperPlugin)
-
-// const { useMessage } = naive
+// import { UrlMapperDirective, UrlMapperPlugin } from '../../lib/index.js'
 
 const app = createApp({
   setup() {
+
     const modelRef = ref({
-      age: '',
+      input: '',
       radio: '',
-      time: ''
+      time: 1183135260000,
+      multiSelect: []
     })
+
+    function reset(){
+      modelRef.value = {
+        input: '',
+        radio: '',
+        time: 1183135260000,
+        multiSelect: []
+      }
+    }
     
     return {
-      // formRef,
+      reset,
+      options: [
+        {
+          label: "Everybody's Got Something to Hide Except Me and My Monkey",
+          value: 'song0',
+          disabled: true
+        },
+        {
+          label: 'Drive My Car',
+          value: 'song1'
+        },
+        {
+          label: 'Norwegian Wood',
+          value: 'song2'
+        },
+        {
+          label: "You Won't See",
+          value: 'song3',
+          disabled: true
+        },
+        {
+          label: 'Nowhere Man',
+          value: 'song4'
+        },
+        {
+          label: 'Think For Yourself',
+          value: 'song5'
+        },
+        {
+          label: 'The Word',
+          value: 'song6'
+        },
+        {
+          label: 'Michelle',
+          value: 'song7',
+          disabled: true
+        },
+        {
+          label: 'What goes on',
+          value: 'song8'
+        }],
       model: modelRef,
       songs: [
         {
@@ -39,8 +86,14 @@ const app = createApp({
     }
   },
   methods: {
-    show () {
-      this.visible = true;
+    clearUrl() {
+      this.$clearUrlParams()
+    },
+    ready() {
+      console.log(`ready value: ${JSON.stringify(this.model)}`)
+    },
+    clear() {
+      this.reset()
     }
   }
 })

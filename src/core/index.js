@@ -8,11 +8,16 @@ function parseUrlParams (url) {
   return params
 }
 
+function isFalsyVal(value) {
+  return !value && value !== 0 
+  || (Array.isArray(value) && !value.length)
+}
+
 function replaceQueryState (query) {
   const url = new URL(window.location.href)
 
   for (const [key, value] of Object.entries(query)) {
-    if (!value || !value.length) {
+    if (isFalsyVal(value)) {
       url.searchParams.delete(key)
     } else {
       url.searchParams.set(key, value)
@@ -60,7 +65,9 @@ export function setUrlParams (params) {
   const oriQuery = parseUrlParams(window.location.href)
   const _params = Object.assign({}, oriQuery, params)
   Object.keys(_params).forEach(key => {
-    if ([null, undefined, ''].includes(_params[key]) || (Array.isArray(_params[key]) && !_params[key].length)) {
+    if (isFalsyVal(_params[key])) {
+      // if ([null, undefined, ''].includes(_params[key]) || (Array.isArray(_params[key]) && !_params[key].length)) {
+      
       // delete _params[key]
     } else if (_params[key] || _params[key] === false) {
       let val = _params[key]
