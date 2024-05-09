@@ -1,7 +1,7 @@
 [中文](./README.md)
 
 # url-mapper-vue
-A tool directive that can bind the data property of a Vue component with URL parameters bidirectionally. It is compatible with both Vue2 and Vue3.
+Provides vue directives and methods that allow URL parameters to be bound bidirectionally with the data properties of a Vue component, compatible with Vue2 and Vue3.
 
 ## Installation
 
@@ -79,11 +79,11 @@ import { UrlMapperPlugin } from 'url-mapper-vue'
 Vue.use(UrlMapperPlugin)
 ``` 
 
-插件中提供了三个方法进行 url 映射:
+methods:
 
 - $setDataFromUrl
 
-  - 将 url 参数值写入到组件 data 中。
+  - url params to component data。
   参数（arguments）: { [key]: { path: [data path], type: [type] } }
     - key: url 参数名称
     - data path: data 属性的路径，例如data.form.age, 则是 'form.age'.
@@ -91,11 +91,11 @@ Vue.use(UrlMapperPlugin)
 
 - $setUrlParams
 
-- 将 data 映射到 url 参数上。
+- component data to url params。
   参数 (arguments): js 对象.
 
 - $clearUrlParams
-  - 清除 url 参数.
+  - clear url params.
 
 
 Example:

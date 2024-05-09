@@ -1,7 +1,7 @@
 [English](./README.en.md)
 
 # url-mapper-vue
-一个可以将 vue 组件的 data 属性与 url参数 双向绑定的工具 directives，适用于 vue2 和 vue3 。
+提供了 vue 指令（directives）和方法，可以将 url 参数与 vue 组件的 data 属性相互绑定, 适用于 vue2、vue3 。
 
 ## 安装
 
