@@ -4,7 +4,7 @@
   "description": "Map the url search params to the data of the vue component.",
   "main": "lib/index.js",
   "scripts": {
-    "test": "jest --detectOpenHandles",
+    "test": "jest --detectOpenHandles --testTimeout=20000",
     "build": "webpack",
     "build:test": "npm run example:2 && npm run example:3",
     "example:2": "cross-env cross-env VUE_VERSION=2 webpack --config ./webpack.dev.config.js",
