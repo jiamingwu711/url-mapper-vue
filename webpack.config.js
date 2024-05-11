@@ -28,18 +28,18 @@ module.exports = {
     //   }
     // ]
   },
-  // optimization: {
-  //   minimize: true,
-  //   minimizer: [
-  //     new TerserPlugin({
-  //       terserOptions: {
-  //         format: {
-  //           comments: false
-  //         }
-  //       },
-  //       extractComments: true
-  //     })
-  //   ]
-  // },
+  optimization: {
+    minimize: true,
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          format: {
+            comments: false
+          }
+        },
+        extractComments: false
+      })
+    ]
+  },
   mode: 'production'
 }

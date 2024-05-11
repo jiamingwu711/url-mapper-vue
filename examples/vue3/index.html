@@ -36,6 +36,58 @@
           </n-radio-group>
         </n-form-item>
 
+        <n-form-item path="checkbox" label="checkbox">
+          <n-checkbox-group 
+            v-model:value="model.checkbox"
+            v-url-map="{ url:'checkbox', type:'array|string', value:'model.checkbox' }" 
+            label="checkbox">
+            <n-grid :y-gap="8" :cols="2">
+              <n-gi>
+                <n-checkbox id="checkbox-opt1" value="Pushes Open" label="推开" />
+              </n-gi>
+              <n-gi>
+                <n-checkbox id="checkbox-opt2" value="The Window" label="窗户" />
+              </n-gi>
+              <n-gi>
+                <n-checkbox id="checkbox-opt3" value="And Raises" label="举起" />
+              </n-gi>
+              <n-gi>
+                <n-checkbox id="checkbox-opt4" value="The Spyglass" label="望远镜" />
+              </n-gi>
+            </n-grid>
+          </n-checkbox-group>
+        </n-form-item>
+
+        <n-form-item path="checkbox2" label="checkbox2">
+          <n-checkbox-group 
+            v-model:value="model.checkbox2"
+            v-url-map="{ url:'checkbox2', type:'array|number', value:'model.checkbox2' }" 
+            label="checkbox2">
+            <n-grid :y-gap="8" :cols="2">
+              <n-gi>
+                <n-checkbox id="checkbox2-opt1" :value="111" label="推开" />
+              </n-gi>
+              <n-gi>
+                <n-checkbox id="checkbox2-opt2" :value="222" label="窗户" />
+              </n-gi>
+              <n-gi>
+                <n-checkbox id="checkbox2-opt3" :value="333" label="举起" />
+              </n-gi>
+              <n-gi>
+                <n-checkbox id="checkbox2-opt4" :value="444" label="望远镜" />
+              </n-gi>
+            </n-grid>
+          </n-checkbox-group>
+        </n-form-item>
+
+        <n-form-item path="switch" v-model:value="model.switch" label="switch">
+          <n-switch 
+            id="switch"
+            v-model:value="model.switch"
+            v-url-map="{ url:'switch', type:'boolean', value:'model.switch' }"
+            :round="false" />
+        </n-form-item>
+
         <n-form-item path="time" label="time">
           <n-date-picker 
           v-model:value="model.time"
@@ -51,10 +103,18 @@
           :options="options" />
         </n-form-item>
 
+        <n-button id="submit" @click="submit">submit</n-button>
+
         <n-button @click="clear">reset</n-button>
         <n-button @click="clearUrl">clearUrl</n-button>
       
       </n-form>
+
+      <n-input
+        v-model:value="result"
+        type="textarea"
+        placeholder="Textarea"
+      />
 
     </n-flex>
   </div>

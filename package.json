@@ -4,7 +4,12 @@
   "description": "Map the url search params to the data of the vue component.",
   "main": "lib/index.js",
   "scripts": {
+    "test": "jest --detectOpenHandles",
     "build": "webpack",
+    "build:test": "npm run example:2 && npm run example:3",
+    "example:2": "cross-env cross-env VUE_VERSION=2 webpack --config ./webpack.dev.config.js",
+    "example:3": "cross-env cross-env VUE_VERSION=3 webpack --config ./webpack.dev.config.js",
+    "serve:demo": "ws -p 4000 --static.index ./dist/",
     "serve:vue2": "cross-env VUE_VERSION=2 npx webpack serve --config ./webpack.dev.config.js",
     "serve:vue3": "cross-env VUE_VERSION=3 npx webpack serve --config ./webpack.dev.config.js",
     "release": "release-it"
@@ -17,6 +22,12 @@
     "eslint": "^8.41.0",
     "eslint-config-standard": "^17.0.0",
     "html-webpack-plugin": "^5.6.0",
+    "jest": "^29.7.0",
+    "jest-dev-server": "^10.0.0",
+    "jest-puppeteer": "^10.0.1",
+    "local-web-server": "^5.3.3",
+    "puppeteer": "^22.8.0",
+    "regenerator-runtime": "^0.14.1",
     "release-it": "^17.2.1",
     "terser-webpack-plugin": "^5.3.10",
     "webpack": "^5.84.1",
@@ -35,6 +46,7 @@
     "mapper",
     "vue"
   ],
+  "jest": {},
   "author": "kingcong",
   "license": "ISC",
   "dependencies": {

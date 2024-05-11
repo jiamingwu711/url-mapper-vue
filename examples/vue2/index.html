@@ -17,6 +17,7 @@
           <el-form-item label="活动名称">
             <el-input 
               v-model="form.name" 
+              id="input"
               v-url-map="{url:'name',type:'string', value:form.name}">
             </el-input>
           </el-form-item>
@@ -26,7 +27,7 @@
               v-model="form.region"
               placeholder="请选择活动区域"
               >
-              <el-option label="区域一" value="shanghai"></el-option>
+              <el-option label="区域一" id="cx1" value="shanghai"></el-option>
               <el-option label="区域二" value="beijing"></el-option>
             </el-select>
           </el-form-item>
@@ -55,6 +56,7 @@
           <el-form-item label="即时配送">
             <el-switch 
               v-model="form.delivery" 
+              id="switch"
               v-url-map="{url:'delivery',type:'boolean', value:form.delivery}"
             ></el-switch>
           </el-form-item>
@@ -63,12 +65,25 @@
               v-model="form.type"
               v-url-map="{url:'type',type:'array|string', value:form.type}"
               >
-              <el-checkbox label="美食/餐厅线上活动" name="type"></el-checkbox>
-              <el-checkbox label="地推活动" name="type"></el-checkbox>
-              <el-checkbox label="线下主题活动" name="type"></el-checkbox>
-              <el-checkbox label="单纯品牌曝光" name="type"></el-checkbox>
+              <el-checkbox id="checkbox-opt1" label="美食/餐厅线上活动" name="type"></el-checkbox>
+              <el-checkbox id="checkbox-opt2" label="地推活动" name="type"></el-checkbox>
+              <el-checkbox id="checkbox-opt3" label="线下主题活动" name="type"></el-checkbox>
+              <el-checkbox id="checkbox-opt4" label="单纯品牌曝光" name="type"></el-checkbox>
             </el-checkbox-group>
           </el-form-item>
+
+          <el-form-item label="活动性质2">
+            <el-checkbox-group 
+              v-model="form.type2"
+              v-url-map="{url:'type2',type:'array|number', value:form.type2}"
+              >
+              <el-checkbox id="checkbox2-opt1" :label="111" name="type"></el-checkbox>
+              <el-checkbox id="checkbox2-opt2" :label="222" name="type"></el-checkbox>
+              <el-checkbox id="checkbox2-opt3" :label="333" name="type"></el-checkbox>
+              <el-checkbox id="checkbox2-opt4" :label="444" name="type"></el-checkbox>
+            </el-checkbox-group>
+          </el-form-item>
+
           <el-form-item label="特殊资源">
             <el-radio-group 
               v-model="form.resource" 
@@ -85,10 +100,13 @@
             </el-input>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="onSubmit">立即创建</el-button>
+            <el-button id="submit" type="primary" @click="onSubmit">立即创建</el-button>
             <el-button @click="clear">重置</el-button>
           </el-form-item>
         </el-form>
+
+        result
+        <el-input id="result" type="textarea" :row="5" v-model="result"/>
       </el-col>
 
       <el-col :span="12">

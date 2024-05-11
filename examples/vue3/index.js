@@ -5,13 +5,21 @@ import { UrlMapperDirective, UrlMapperPlugin } from '../../src/index.js'
 // import { UrlMapperDirective, UrlMapperPlugin } from '../../lib/index.js'
 
 const app = createApp({
+  data() {
+    return {
+      result: ""
+    }
+  },
   setup() {
 
     const modelRef = ref({
       input: '',
       radio: '',
       time: 1183135260000,
-      multiSelect: []
+      multiSelect: [],
+      checkbox: [],
+      checkbox2: [],
+      switch: false
     })
 
     function reset(){
@@ -19,7 +27,10 @@ const app = createApp({
         input: '',
         radio: '',
         time: 1183135260000,
-        multiSelect: []
+        multiSelect: [],
+        checkbox: [],
+        checkbox2: [],
+        switch: false
       }
     }
     
@@ -86,6 +97,9 @@ const app = createApp({
     }
   },
   methods: {
+    submit() {
+      this.result = JSON.stringify(this.model)
+    },
     clearUrl() {
       this.$clearUrlParams()
     },

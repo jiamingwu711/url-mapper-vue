@@ -9,7 +9,7 @@ new Vue({
   data: function() {
     return { 
       visible: false,
-      message: 'hello',
+      result: '',
       form: {
         name: '',
         region: '',
@@ -17,6 +17,7 @@ new Vue({
         date2: '',
         delivery: false,
         type: [],
+        type2: [],
         resource: '',
         desc: ''
       },
@@ -31,7 +32,7 @@ new Vue({
   },
   methods: {
     onSubmit() {
-      console.log('submit!');
+      this.result = JSON.stringify(this.form)
     },
     clear() {
       this.form =  {
@@ -41,6 +42,7 @@ new Vue({
         date2: '',
         delivery: false,
         type: [],
+        type2: [],
         resource: '',
         desc: ''
       }
