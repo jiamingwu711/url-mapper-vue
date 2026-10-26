@@ -20,9 +20,20 @@ function compareVersion(v1, v2) {
   return 0;
 }
 
+/**
+ * 判断传入 install 的是否为 vue3 的 app。
+ * 优先使用版本号，缺失时回退到判断 app.config.globalProperties 是否存在。
+ */
+function isVue3 (Vue) {
+  if (Vue && typeof Vue.version === 'string') {
+    return compareVersion(Vue.version, '3') >= 0
+  }
+  return !!(Vue && Vue.config && Vue.config.globalProperties)
+}
+
 export default {
   install: (Vue) => {
-    if(compareVersion(Vue.version, '3') >= 0){
+    if (isVue3(Vue)) {
       Vue.config.globalProperties.$clearUrlParams = clearUrlParams
       Vue.config.globalProperties.$setDataFromUrl = setDataFromUrl
       Vue.config.globalProperties.$setUrlParams = setUrlParams
@@ -30,7 +41,6 @@ export default {
       Vue.prototype.$clearUrlParams = clearUrlParams
       Vue.prototype.$setDataFromUrl = setDataFromUrl
       Vue.prototype.$setUrlParams = setUrlParams
-
     }
   }
 }

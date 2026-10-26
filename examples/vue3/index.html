@@ -103,6 +103,16 @@
           :options="options" />
         </n-form-item>
 
+        <n-form-item path="nested" label="nested">
+          <div id="nested-wrap">
+            <n-input
+              v-model:value="extra.deep.text"
+              v-url-map="{ url:'nested', type:'string', value:'extra.deep.text' }"
+              @keydown.enter.prevent
+            />
+          </div>
+        </n-form-item>
+
         <n-button id="submit" @click="submit">submit</n-button>
 
         <n-button @click="clear">reset</n-button>

@@ -92,6 +92,35 @@ describe('Test1', () => {
     expect(urlParams.get('checkbox2')).toBe('111,222')
   })
 
+  test('vue3 test nested path', async () => {
+    // url -> data
+    let page = await browser.newPage();
+    await page.goto(`${BASE_URL}index_3.html?nested=abc`);
+    await setTimeout(1000);
+    const value = await page.$eval('#nested-wrap .n-input__input-el', el => el.value);
+    expect(value).toBe('abc');
+
+    // data -> url
+    let page2 = await browser.newPage();
+    await page2.goto(`${BASE_URL}index_3.html`);
+    await page2.type('#nested-wrap .n-input__input-el', 'xyz')
+    await setTimeout(1000);
+    const urlParams = new URLSearchParams(page2.url().split('?')[1])
+    expect(urlParams.get('nested')).toBe('xyz')
+  })
+
+  test('vue3 does not write url when data is unchanged', async () => {
+    const urlParams = new URLSearchParams({ input: 'input', switch: true })
+    let page = await browser.newPage();
+    await page.goto(`${BASE_URL}index_3.html?${urlParams.toString()}`);
+    const before = await page.evaluate(() => history.length)
+
+    // url -> data 之后组件会重新渲染，但数据没有被用户修改，不应该再 pushState
+    await setTimeout(1500);
+    const after = await page.evaluate(() => history.length)
+    expect(after).toBe(before)
+  })
+
 });
 
 afterAll(async () => {

@@ -70,6 +70,34 @@ v-url-map={url, type, value, callback}
       </el-form>
 ```
 
+使用案例 (vue3):
+
+vue3 中指令无法通过表达式获取数据路径，`value` 必须写成字符串形式的路径（支持多级，如 `'extra.deep.text'`；`setup` 中返回的 `ref` 会被自动解包）。
+只有数据真正变化时才会更新 url；组件卸载后会自动清理内部状态。
+
+```
+<script>
+import { ref } from 'vue'
+export default {
+  setup () {
+    const model = ref({ input: '', checkbox: [] })
+    const ready = () => console.log('ready', model.value)
+    // callback 指定的方法需要在 setup 中返回
+    return { model, ready }
+  }
+}
+</script>
+
+<template>
+  <n-input
+    v-model:value="model.input"
+    v-url-map="{ url: 'input', type: 'string', value: 'model.input', callback: 'ready' }" />
+  <n-checkbox-group
+    v-model:value="model.checkbox"
+    v-url-map="{ url: 'checkbox', type: 'array|string', value: 'model.checkbox' }" />
+</template>
+```
+
 
 ### vue 插件
 

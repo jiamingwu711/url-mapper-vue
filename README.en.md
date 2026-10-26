@@ -69,6 +69,34 @@ example (vue2):
     </el-form>
 ```
 
+example (vue3):
+
+In vue3 the directive cannot read the data path from the expression, so `value` must be a string path (multi-level paths such as `'extra.deep.text'` are supported; refs returned from `setup` are unwrapped automatically).
+The url is only updated when the data really changes, and internal state is cleaned up when the component is unmounted.
+
+```
+<script>
+import { ref } from 'vue'
+export default {
+  setup () {
+    const model = ref({ input: '', checkbox: [] })
+    const ready = () => console.log('ready', model.value)
+    // the method used by `callback` must be returned from setup
+    return { model, ready }
+  }
+}
+</script>
+
+<template>
+  <n-input
+    v-model:value="model.input"
+    v-url-map="{ url: 'input', type: 'string', value: 'model.input', callback: 'ready' }" />
+  <n-checkbox-group
+    v-model:value="model.checkbox"
+    v-url-map="{ url: 'checkbox', type: 'array|string', value: 'model.checkbox' }" />
+</template>
+```
+
 ### vue 插件
 
 安装:

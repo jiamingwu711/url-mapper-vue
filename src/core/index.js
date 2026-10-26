@@ -52,6 +52,16 @@ function parseJSON2Object (str) {
   }
 }
 
+/**
+ * 按路径安全取值，例如 getByPath(vm, 'form.name')。
+ * 路径为空、非字符串或中间节点为 null/undefined 时返回 undefined。
+ * 在 Vue 3 中，通过组件实例代理访问时 ref 会被自动解包。
+ */
+export function getByPath (target, path) {
+  if (target == null || typeof path !== 'string' || !path) return undefined
+  return path.split('.').reduce((acc, key) => (acc == null ? undefined : acc[key]), target)
+}
+
 export function clearUrlParams () {
   const newUrl = `${window.location.pathname}${window.location.hash}`
   window.history.replaceState('', '', newUrl)
@@ -155,8 +165,12 @@ export function setDataFromUrl (config) {
       const keyPath = path.split('.')
       targetKey = keyPath.pop()
       keyPath.forEach(subPath => {
-        that = this[subPath]
+        that = that == null ? undefined : that[subPath]
       })
+    }
+    if (that == null) {
+      console.warn(`[url-mapper-vue] 无法根据路径 "${path}" 找到目标数据，已跳过 url 参数 "${key}"`)
+      return
     }
     that[targetKey] = valToBeSet
   })

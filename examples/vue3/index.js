@@ -1,7 +1,6 @@
-
-
-const { createApp, ref } = Vue
+/* global Vue, naive */
 import { UrlMapperDirective, UrlMapperPlugin } from '../../src/index.js'
+const { createApp, ref, getCurrentInstance } = Vue
 // import { UrlMapperDirective, UrlMapperPlugin } from '../../lib/index.js'
 const options = [
   {
@@ -44,14 +43,10 @@ const options = [
     value: 'song8'
   }]
 const app = createApp({
-  data() {
-    return {
-      result: ""
-    }
-  },
-  setup() {
+  setup () {
+    const instance = getCurrentInstance()
 
-    const modelRef = ref({
+    const createModel = () => ({
       input: '',
       radio: '',
       time: 1183135260000,
@@ -61,22 +56,37 @@ const app = createApp({
       switch: false
     })
 
-    function reset(){
-      modelRef.value = {
-        input: '',
-        radio: '',
-        time: 1183135260000,
-        multiSelect: [],
-        checkbox: [],
-        checkbox2: [],
-        switch: false
-      }
+    const model = ref(createModel())
+    // 多级路径示例：v-url-map 的 value 为 'extra.deep.text'
+    const extra = ref({ deep: { text: '' } })
+    const result = ref('')
+
+    // 供 v-url-map 的 callback 配置使用，需要在 setup 中返回
+    function ready () {
+      console.log(`ready value: ${JSON.stringify(model.value)}`)
     }
-    
+
+    function submit () {
+      result.value = JSON.stringify(model.value)
+    }
+
+    function clearUrl () {
+      instance.proxy.$clearUrlParams()
+    }
+
+    function clear () {
+      model.value = createModel()
+    }
+
     return {
-      reset,
       options,
-      model: modelRef,
+      model,
+      extra,
+      result,
+      ready,
+      submit,
+      clearUrl,
+      clear,
       songs: [
         {
           value: "Rock'n'Roll Star",
@@ -89,25 +99,11 @@ const app = createApp({
         {
           value: 'Up in the Sky',
           label: 'Up in the Sky'
-        },
+        }
       ].map((s) => {
         s.value = s.value.toLowerCase()
         return s
       })
-    }
-  },
-  methods: {
-    submit() {
-      this.result = JSON.stringify(this.model)
-    },
-    clearUrl() {
-      this.$clearUrlParams()
-    },
-    ready() {
-      console.log(`ready value: ${JSON.stringify(this.model)}`)
-    },
-    clear() {
-      this.reset()
     }
   }
 })
@@ -115,4 +111,4 @@ const app = createApp({
 app.use(UrlMapperDirective)
 app.use(UrlMapperPlugin)
 app.use(naive)
-app.mount("#app");
+app.mount('#app')
