@@ -118,6 +118,25 @@ describe('Test1', () => {
     expect(after).toBe(before)
   })
 
+  test('vue3 closed component (script setup) with prop form', async () => {
+    const warnings = []
+    const page = await browser.newPage()
+    page.on('console', msg => { if (msg.type() === 'warning') warnings.push(msg.text()) })
+
+    // url -> data
+    await page.goto(`${BASE_URL}index_3.html?closed=abc`)
+    await setTimeout(1000)
+    const value = await page.$eval('#closed-wrap .n-input__input-el', el => el.value)
+    expect(value).toBe('abc')
+
+    // data -> url
+    await page.type('#closed-wrap .n-input__input-el', 'def')
+    await setTimeout(1000)
+    const urlParams = new URLSearchParams(page.url().split('?')[1])
+    expect(urlParams.get('closed')).toBe('abcdef')
+    expect(warnings.filter(w => w.includes('url-mapper-vue'))).toEqual([])
+  })
+
   test('hash mode url2Data', async () => {
     const page = await browser.newPage()
     await page.goto(`${BASE_URL}index_3.html#/list?input=hello&switch=true`)
@@ -142,6 +161,65 @@ describe('Test1', () => {
     expect(hash.startsWith('#/list?')).toBe(true)
     const hashParams = new URLSearchParams(hash.split('?')[1])
     expect(hashParams.get('input')).toBe('hello world')
+  })
+
+  test('anchor containing "?" is not treated as hash route (read from search)', async () => {
+    const page = await browser.newPage()
+    await page.goto(`${BASE_URL}index_3.html?input=abc#faq?section-2`)
+    await setTimeout(1000)
+    const value = await page.$eval('.n-input__input-el', el => el.value)
+    // 参数应来自 "?" 之前的 search，而不是锚点里的 "section-2"
+    expect(value).toBe('abc')
+  })
+
+  test('anchor containing "?" is kept intact when writing and clearing params', async () => {
+    const page = await browser.newPage()
+    await page.goto(`${BASE_URL}index_3.html?input=abc#faq?section-2`)
+    await setTimeout(1000)
+    await page.type('.n-input__input-el', 'd')
+    await setTimeout(1000)
+
+    let loc = await page.evaluate(() => ({ search: location.search, hash: location.hash }))
+    expect(new URLSearchParams(loc.search).get('input')).toBe('abcd')
+    expect(loc.hash).toBe('#faq?section-2')
+
+    // 清除参数只清 search，锚点原样保留
+    await page.evaluate(() => {
+      const evt = Array.from(document.querySelectorAll('button')).find(b => b.textContent.trim() === 'clearUrl')
+      evt.click()
+    })
+    await setTimeout(300)
+    loc = await page.evaluate(() => ({ search: location.search, hash: location.hash }))
+    expect(loc.search).toBe('')
+    expect(loc.hash).toBe('#faq?section-2')
+  })
+
+  test('plain anchor is not treated as hash route', async () => {
+    const page = await browser.newPage()
+    await page.goto(`${BASE_URL}index_3.html?input=abc#section`)
+    await setTimeout(1000)
+    const value = await page.$eval('.n-input__input-el', el => el.value)
+    expect(value).toBe('abc')
+
+    await page.type('.n-input__input-el', 'd')
+    await setTimeout(1000)
+    const loc = await page.evaluate(() => ({ search: location.search, hash: location.hash }))
+    expect(new URLSearchParams(loc.search).get('input')).toBe('abcd')
+    expect(loc.hash).toBe('#section')
+  })
+
+  test('hash mode clearUrlParams only clears params inside hash', async () => {
+    const page = await browser.newPage()
+    await page.goto(`${BASE_URL}index_3.html?keep=1#/list?input=hello`)
+    await setTimeout(1000)
+    await page.evaluate(() => {
+      const btn = Array.from(document.querySelectorAll('button')).find(b => b.textContent.trim() === 'clearUrl')
+      btn.click()
+    })
+    await setTimeout(300)
+    const loc = await page.evaluate(() => ({ search: location.search, hash: location.hash }))
+    expect(loc.search).toBe('?keep=1')
+    expect(loc.hash).toBe('#/list')
   })
 })
 

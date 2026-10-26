@@ -125,12 +125,24 @@ function parseConfig (value, fallbackPath) {
   return { url, type, path, callback }
 }
 
+/**
+ * 获取模板所属组件的实例。
+ * <script setup> 组件默认是"关闭"的，binding.instance 只能访问 expose 出来的内容，
+ * 取不到 props 和 setup 中的绑定（例如通过 props 传入的 queryForm），
+ * 因此通过 instance.$（内部实例）取完整的组件实例代理 proxy，取不到时再回退到 binding.instance。
+ */
+function resolveInstance ({ instance }) {
+  return (instance && instance.$ && instance.$.proxy) || instance
+}
+
 const config = {
   /**
    * for vue3
    */
-  beforeMount (el, { value, instance }) {
+  beforeMount (el, binding) {
     // 从 url 取出值，更新到 data 中
+    const { value } = binding
+    const instance = resolveInstance(binding)
     if (!value || !instance) return
     const { url, type, path, callback } = parseConfig(value, value.value)
 
@@ -146,7 +158,9 @@ const config = {
   /**
    * for vue3
    */
-  updated (el, { value, instance }) {
+  updated (el, binding) {
+    const { value } = binding
+    const instance = resolveInstance(binding)
     if (!value || !instance) return
     const { url } = value
     if (!url || typeof value.value !== 'string') return
@@ -182,7 +196,8 @@ const config = {
   /**
    * for vue3
    */
-  unmounted (el, { instance }) {
+  unmounted (el, binding) {
+    const instance = resolveInstance(binding)
     if (!instance) return
     const state = states.get(instance)
     if (!state) return

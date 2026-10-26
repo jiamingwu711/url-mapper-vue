@@ -1,11 +1,10 @@
 /**
  * 是否为 hash 路由模式（例如 http://host/#/list?tab=1）。
- * hash 以 "#/" 或 "#!/" 开头，或 hash 中已带有 "?"，即认为参数位于 hash 内；
- * 普通锚点（如 #section）不算 hash 路由。
+ * 仅当 hash 以 "#/" 或 "#!/" 开头（路由前缀），或以 "#?" 开头（仅有参数）时才认为参数位于 hash 内；
+ * 普通锚点（如 #section、#faq?section-2）不算 hash 路由，避免误读/误改 "?" 之前的普通参数。
  */
 function isHashMode () {
-  const hash = window.location.hash
-  return /^#!?\//.test(hash) || hash.indexOf('?') > -1
+  return /^(#!?\/|#\?)/.test(window.location.hash)
 }
 
 /**
@@ -33,7 +32,7 @@ function parseUrlParams () {
 }
 
 function isFalsyVal (value) {
-  return !value && value !== 0 ||
+  return (!value && value !== 0) ||
   (Array.isArray(value) && !value.length)
 }
 

@@ -1,6 +1,6 @@
 /* global Vue, naive */
 import { UrlMapperDirective, UrlMapperPlugin } from '../../src/index.js'
-const { createApp, ref, getCurrentInstance } = Vue
+const { createApp, ref, reactive, getCurrentInstance } = Vue
 // import { UrlMapperDirective, UrlMapperPlugin } from '../../lib/index.js'
 const options = [
   {
@@ -42,9 +42,25 @@ const options = [
     label: 'What goes on',
     value: 'song8'
   }]
+// 模拟 <script setup> 组件：expose 为空（实例默认关闭），表单通过 props 传入
+const ClosedForm = {
+  props: { form: { type: Object, required: true } },
+  expose: [],
+  template: `
+    <div id="closed-wrap">
+      <n-input
+        v-model:value="form.text"
+        v-url-map="{ url: 'closed', type: 'string', value: 'form.text' }"
+        @keydown.enter.prevent
+      />
+    </div>
+  `
+}
+
 const app = createApp({
   setup () {
     const instance = getCurrentInstance()
+    const closedForm = reactive({ text: '' })
 
     const createModel = () => ({
       input: '',
@@ -82,6 +98,7 @@ const app = createApp({
       options,
       model,
       extra,
+      closedForm,
       result,
       ready,
       submit,
@@ -108,6 +125,7 @@ const app = createApp({
   }
 })
 
+app.component('ClosedForm', ClosedForm)
 app.use(UrlMapperDirective)
 app.use(UrlMapperPlugin)
 app.use(naive)

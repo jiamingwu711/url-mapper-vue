@@ -98,6 +98,37 @@ export default {
 </template>
 ```
 
+### hash 路由模式
+
+使用 hash 路由（如 vue-router 的 `createWebHashHistory()` / `mode: 'hash'`）时无需任何额外配置，会自动识别并把参数读写在 hash 内的 `?` 之后，路由部分保持不变。`v-url-map` 指令和 `$setDataFromUrl`、`$setUrlParams`、`$clearUrlParams` 三个方法都适用。
+
+识别规则：`location.hash` 以 `#/`、`#!/` 或 `#?` 开头，即视为 hash 路由模式；其它情况（如 `#section`、`#faq?section-2` 这类普通锚点，即使锚点里含 `?`）都不算，仍然读写 `?` 在 hash 之前的普通参数，锚点原样保留。
+
+```
+# 普通模式
+http://host/page?name=foo#section
+
+# hash 路由模式
+http://host/#/list?name=foo
+```
+
+使用方式与普通模式完全一致：
+
+```
+<n-input
+  v-model:value="model.input"
+  v-url-map="{ url: 'input', type: 'string', value: 'model.input' }" />
+```
+
+- 访问 `http://host/#/list?input=hello`，`model.input` 会被赋值为 `hello`。
+- 修改输入框后，地址变为 `http://host/#/list?input=hello%20world`，而不是 `http://host/?input=...#/list`。
+- `$clearUrlParams()` 在 hash 模式下只清除 hash 内的参数，保留 `#/list`。
+
+注意：
+
+- 参数通过 `history.pushState` 写入，不会触发 `hashchange`，vue-router 的 `route.query` 不会包含这些参数。使用 `router.push` 跳转时如需保留参数，请自行带上 `query`。
+- hash 路由模式下，位于 hash 之前的参数（如 `http://host/?a=1#/list`）不会被读取，也不会被修改。
+- 模式是在每次读写时根据当前 `location.hash` 判断的。如果页面地址完全没有 hash（如 `http://host/`），会按普通模式写入；vue-router 的 hash 模式在初始化时会自动补上 `#/`，一般不受影响。
 
 ### vue 插件
 

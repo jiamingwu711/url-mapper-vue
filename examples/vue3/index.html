@@ -113,6 +113,10 @@
           </div>
         </n-form-item>
 
+        <n-form-item path="closed" label="closed (prop form)">
+          <closed-form :form="closedForm" />
+        </n-form-item>
+
         <n-button id="submit" @click="submit">submit</n-button>
 
         <n-button @click="clear">reset</n-button>

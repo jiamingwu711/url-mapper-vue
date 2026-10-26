@@ -97,6 +97,38 @@ export default {
 </template>
 ```
 
+### Hash router mode
+
+With a hash router (e.g. vue-router `createWebHashHistory()` / `mode: 'hash'`) no extra configuration is needed. It is detected automatically, and params are read from and written after the `?` inside the hash, leaving the route part untouched. It works with the `v-url-map` directive and with `$setDataFromUrl`, `$setUrlParams` and `$clearUrlParams`.
+
+Detection: hash mode is used when `location.hash` starts with `#/`, `#!/` or `#?`. Anything else (plain anchors such as `#section`, or `#faq?section-2` even though it contains a `?`) is not a hash route: the normal query before the hash is read and written, and the anchor is kept untouched.
+
+```
+# normal mode
+http://host/page?name=foo#section
+
+# hash router mode
+http://host/#/list?name=foo
+```
+
+Usage is exactly the same as in normal mode:
+
+```
+<n-input
+  v-model:value="model.input"
+  v-url-map="{ url: 'input', type: 'string', value: 'model.input' }" />
+```
+
+- Visiting `http://host/#/list?input=hello` sets `model.input` to `hello`.
+- After editing the input the address becomes `http://host/#/list?input=hello%20world`, not `http://host/?input=...#/list`.
+- In hash mode `$clearUrlParams()` only clears the params inside the hash and keeps `#/list`.
+
+Notes:
+
+- Params are written with `history.pushState`, which does not fire `hashchange`, so vue-router's `route.query` will not contain them. If you need to keep them when calling `router.push`, pass `query` yourself.
+- In hash mode, params placed before the hash (e.g. `http://host/?a=1#/list`) are neither read nor modified.
+- The mode is decided on every read/write from the current `location.hash`. If the address has no hash at all (e.g. `http://host/`), normal mode is used; vue-router's hash mode adds `#/` on initialisation, so this is usually not an issue.
+
 ### vue 插件
 
 安装:
