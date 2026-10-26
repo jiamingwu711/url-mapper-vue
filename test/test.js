@@ -1,44 +1,42 @@
-const startServer = require('./globalSetup');
-const stopServer = require('./globalTeardown');
-const puppeteer = require('puppeteer');
-const {setTimeout} = require("node:timers/promises");
+const startServer = require('./globalSetup')
+const stopServer = require('./globalTeardown')
+const puppeteer = require('puppeteer')
+const { setTimeout } = require('node:timers/promises')
 
-let browser; // 浏览器实例
+let browser // 浏览器实例
 
-const BASE_URL = `http://127.0.0.1:4000/dist/`
+const BASE_URL = 'http://127.0.0.1:4000/dist/'
 
 beforeAll(async () => {
-  await startServer(); // 启动本地服务
-  browser = await puppeteer.launch();
-});
+  await startServer() // 启动本地服务
+  browser = await puppeteer.launch()
+})
 
 describe('Test1', () => {
   test('vue2 test url2Data', async () => {
-
-    const queryObj = {"name":"input","region":"shanghai","date1":"2024-05-01","date2":"16:37:00","delivery":true,"type":["线下主题活动","单纯品牌曝光"], "type2":[111,222],"resource":"线下场地免费","desc":"test"}
+    const queryObj = { name: 'input', region: 'shanghai', date1: '2024-05-01', date2: '16:37:00', delivery: true, type: ['线下主题活动', '单纯品牌曝光'], type2: [111, 222], resource: '线下场地免费', desc: 'test' }
     const urlParams = new URLSearchParams(queryObj)
     const url = `${BASE_URL}index_2.html?${urlParams.toString()}`
-    let page = await browser.newPage();
-    await page.goto(url);
+    const page = await browser.newPage()
+    await page.goto(url)
 
     await page.click('#submit')
-    const searchValue = await page.$eval('#result', el => el.value);
+    const searchValue = await page.$eval('#result', el => el.value)
     console.log('searchValue: ', searchValue)
-    expect(JSON.parse(searchValue)).toEqual(queryObj);
-  });
+    expect(JSON.parse(searchValue)).toEqual(queryObj)
+  })
 
   test('vue2 test data2url', async () => {
-
-    let page2 = await browser.newPage();
-    await page2.goto(`${BASE_URL}index_2.html`);
+    const page2 = await browser.newPage()
+    await page2.goto(`${BASE_URL}index_2.html`)
     await page2.type('#input', 'hello') // name = hello
     await page2.click('.el-switch') // delivery = true
     await page2.click('#checkbox-opt1') //
-    await page2.click('#checkbox-opt2') // type = 美食/餐厅线上活动,地推活动 
-    await page2.click('#checkbox2-opt1') // 
+    await page2.click('#checkbox-opt2') // type = 美食/餐厅线上活动,地推活动
+    await page2.click('#checkbox2-opt1') //
     await page2.click('#checkbox2-opt2') // type2 = 111,222
 
-    await setTimeout(1000);
+    await setTimeout(1000)
 
     const url = await page2.url()
     console.log('url', url)
@@ -51,36 +49,35 @@ describe('Test1', () => {
   })
 
   test('vue3 test url2Data', async () => {
-    const queryObj = {"input":"input","radio":"rock'n'roll star","time":1182873600000,"multiSelect":["song4","song5"],"checkbox":["Pushes Open","And Raises"],"checkbox2":[111,333],"switch":true}
+    const queryObj = { input: 'input', radio: "rock'n'roll star", time: 1182873600000, multiSelect: ['song4', 'song5'], checkbox: ['Pushes Open', 'And Raises'], checkbox2: [111, 333], switch: true }
     const urlParams = new URLSearchParams(queryObj)
     const url = `${BASE_URL}index_3.html?${urlParams.toString()}`
-    let page = await browser.newPage();
-    await page.goto(url);
-    
-    await setTimeout(1000);
+    const page = await browser.newPage()
+    await page.goto(url)
+
+    await setTimeout(1000)
 
     await page.click('#submit')
-    const searchValue = await page.$eval('.n-input__textarea-el', el => el.value);
+    const searchValue = await page.$eval('.n-input__textarea-el', el => el.value)
     console.log('searchValue: ', searchValue)
-    expect(JSON.parse(searchValue)).toEqual(queryObj);
-  });
-  
-  test('vue3 test data2url', async () => {
+    expect(JSON.parse(searchValue)).toEqual(queryObj)
+  })
 
-    let page = await browser.newPage();
-    await page.goto(`${BASE_URL}index_3.html`);
+  test('vue3 test data2url', async () => {
+    const page = await browser.newPage()
+    await page.goto(`${BASE_URL}index_3.html`)
     // name = hello
-    await page.type('.n-input__input-el', 'hello') 
+    await page.type('.n-input__input-el', 'hello')
     // switch = true
-    await page.click('#switch') 
+    await page.click('#switch')
     // checkbox = Pushes Open,The Window
     await page.click('#checkbox-opt1') //
-    await page.click('#checkbox-opt2') 
+    await page.click('#checkbox-opt2')
     // checkbox2 = 111,222
-    await page.click('#checkbox2-opt1') // 
-    await page.click('#checkbox2-opt2') 
+    await page.click('#checkbox2-opt1') //
+    await page.click('#checkbox2-opt2')
 
-    await setTimeout(1000);
+    await setTimeout(1000)
 
     const url = await page.url()
     console.log('url', url)
@@ -94,36 +91,61 @@ describe('Test1', () => {
 
   test('vue3 test nested path', async () => {
     // url -> data
-    let page = await browser.newPage();
-    await page.goto(`${BASE_URL}index_3.html?nested=abc`);
-    await setTimeout(1000);
-    const value = await page.$eval('#nested-wrap .n-input__input-el', el => el.value);
-    expect(value).toBe('abc');
+    const page = await browser.newPage()
+    await page.goto(`${BASE_URL}index_3.html?nested=abc`)
+    await setTimeout(1000)
+    const value = await page.$eval('#nested-wrap .n-input__input-el', el => el.value)
+    expect(value).toBe('abc')
 
     // data -> url
-    let page2 = await browser.newPage();
-    await page2.goto(`${BASE_URL}index_3.html`);
+    const page2 = await browser.newPage()
+    await page2.goto(`${BASE_URL}index_3.html`)
     await page2.type('#nested-wrap .n-input__input-el', 'xyz')
-    await setTimeout(1000);
+    await setTimeout(1000)
     const urlParams = new URLSearchParams(page2.url().split('?')[1])
     expect(urlParams.get('nested')).toBe('xyz')
   })
 
   test('vue3 does not write url when data is unchanged', async () => {
     const urlParams = new URLSearchParams({ input: 'input', switch: true })
-    let page = await browser.newPage();
-    await page.goto(`${BASE_URL}index_3.html?${urlParams.toString()}`);
+    const page = await browser.newPage()
+    await page.goto(`${BASE_URL}index_3.html?${urlParams.toString()}`)
     const before = await page.evaluate(() => history.length)
 
     // url -> data 之后组件会重新渲染，但数据没有被用户修改，不应该再 pushState
-    await setTimeout(1500);
+    await setTimeout(1500)
     const after = await page.evaluate(() => history.length)
     expect(after).toBe(before)
   })
 
-});
+  test('hash mode url2Data', async () => {
+    const page = await browser.newPage()
+    await page.goto(`${BASE_URL}index_3.html#/list?input=hello&switch=true`)
+    await setTimeout(1000)
+    const value = await page.$eval('.n-input__input-el', el => el.value)
+    expect(value).toBe('hello')
+  })
+
+  test('hash mode data2url keeps route and writes params into hash', async () => {
+    const page = await browser.newPage()
+    await page.goto(`${BASE_URL}index_3.html#/list?input=hello`)
+    await setTimeout(1000)
+    await page.type('.n-input__input-el', ' world')
+    await setTimeout(1000)
+
+    const { search, hash } = await page.evaluate(() => ({
+      search: location.search,
+      hash: location.hash
+    }))
+    // 参数不能被写到 hash 前面的 search 中
+    expect(search).toBe('')
+    expect(hash.startsWith('#/list?')).toBe(true)
+    const hashParams = new URLSearchParams(hash.split('?')[1])
+    expect(hashParams.get('input')).toBe('hello world')
+  })
+})
 
 afterAll(async () => {
-  await browser.close(); // 关闭浏览器
-  await stopServer(); // 停止本地服务器
-});
+  await browser.close() // 关闭浏览器
+  await stopServer() // 停止本地服务器
+})

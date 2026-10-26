@@ -1,30 +1,63 @@
+/**
+ * 是否为 hash 路由模式（例如 http://host/#/list?tab=1）。
+ * hash 以 "#/" 或 "#!/" 开头，或 hash 中已带有 "?"，即认为参数位于 hash 内；
+ * 普通锚点（如 #section）不算 hash 路由。
+ */
+function isHashMode () {
+  const hash = window.location.hash
+  return /^#!?\//.test(hash) || hash.indexOf('?') > -1
+}
 
-function parseUrlParams (url) {
+/**
+ * 把 hash 拆成路由部分和查询字符串，例如 '#/list?tab=1' => { path: '#/list', query: 'tab=1' }
+ */
+function splitHash (hash) {
+  const index = hash.indexOf('?')
+  if (index === -1) return { path: hash, query: '' }
+  return { path: hash.slice(0, index), query: hash.slice(index + 1) }
+}
+
+function getQueryString () {
+  return isHashMode()
+    ? splitHash(window.location.hash).query
+    : window.location.search.slice(1)
+}
+
+function parseUrlParams () {
   const params = {}
-  const searchParams = new URLSearchParams(url.split('?')[1])
+  const searchParams = new URLSearchParams(getQueryString())
   for (const [key, value] of searchParams) {
     params[key] = value
   }
   return params
 }
 
-function isFalsyVal(value) {
-  return !value && value !== 0 
-  || (Array.isArray(value) && !value.length)
+function isFalsyVal (value) {
+  return !value && value !== 0 ||
+  (Array.isArray(value) && !value.length)
 }
 
 function replaceQueryState (query) {
-  const url = new URL(window.location.href)
+  const hashMode = isHashMode()
+  const hashParts = splitHash(window.location.hash)
+  const searchParams = new URLSearchParams(getQueryString())
 
   for (const [key, value] of Object.entries(query)) {
     if (isFalsyVal(value)) {
-      url.searchParams.delete(key)
+      searchParams.delete(key)
     } else {
-      url.searchParams.set(key, value)
+      searchParams.set(key, value)
     }
   }
 
-  history.pushState({}, '', url)
+  const queryString = searchParams.toString()
+  const { pathname, search, hash } = window.location
+  // hash 模式下参数写在 hash 内，保持 "#/path?query" 结构，不动 "?" 之前的 search
+  const newUrl = hashMode
+    ? `${pathname}${search}${hashParts.path}${queryString ? `?${queryString}` : ''}`
+    : `${pathname}${queryString ? `?${queryString}` : ''}${hash}`
+
+  history.pushState({}, '', newUrl)
 }
 
 function decodeUrl (url, count = 0) {
@@ -63,21 +96,25 @@ export function getByPath (target, path) {
 }
 
 export function clearUrlParams () {
-  const newUrl = `${window.location.pathname}${window.location.hash}`
+  const { pathname, search, hash } = window.location
+  // hash 模式下只清除 hash 内的参数，保留路由部分
+  const newUrl = isHashMode()
+    ? `${pathname}${search}${splitHash(hash).path}`
+    : `${pathname}${hash}`
   window.history.replaceState('', '', newUrl)
 }
 
 /**
- * map data to url params 
+ * map data to url params
  * @param {*} params Object
  */
 export function setUrlParams (params) {
-  const oriQuery = parseUrlParams(window.location.href)
+  const oriQuery = parseUrlParams()
   const _params = Object.assign({}, oriQuery, params)
   Object.keys(_params).forEach(key => {
     if (isFalsyVal(_params[key])) {
       // if ([null, undefined, ''].includes(_params[key]) || (Array.isArray(_params[key]) && !_params[key].length)) {
-      
+
       // delete _params[key]
     } else if (_params[key] || _params[key] === false) {
       let val = _params[key]
@@ -98,23 +135,21 @@ export function setUrlParams (params) {
   replaceQueryState(_params)
 }
 
-
-
 /**
  * map url params to component data
  * @param {*} config { [key]: { path: [data path], type: [type] } }
- * key: url params name 
+ * key: url params name
  * data path: to access the value of vue component data, for example: this.form.name is 'form.name'.
  * type: indicate the value type of component data, these types are supported: boolean, string, number, array|number, array|string
- * 
- * Example: 
+ *
+ * Example:
  * const config = {
- *    type: { path: 'form.type', type: 'array|number' }, // Find the parameter named 'type' from the URL, convert its value to Array Number and map it to 'this.form.type' in the component 
- *    desc: { path: 'form.desc', type: 'string' } // Find the parameter named 'desc' from the URL, convert its value to String and map it to 'this.form.desc' in the component 
+ *    type: { path: 'form.type', type: 'array|number' }, // Find the parameter named 'type' from the URL, convert its value to Array Number and map it to 'this.form.type' in the component
+ *    desc: { path: 'form.desc', type: 'string' } // Find the parameter named 'desc' from the URL, convert its value to String and map it to 'this.form.desc' in the component
  * }
  */
 export function setDataFromUrl (config) {
-  const query = parseUrlParams(window.location.href)
+  const query = parseUrlParams()
   Object.keys(config).forEach(key => {
     let valToBeSet = query[key]
     if (valToBeSet === undefined) return
